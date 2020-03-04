@@ -3,7 +3,7 @@ SDK para la integración de pagos con millas ( PPM ) a Placetopay.
 Con este código, podrá conectarse rápidamente con el servicio de redireccionamiento PlacetoPay.
 
 
-## Requerimientos minimos para el correcto funcionamiento.
+## Requerimientos
 
 * PHP 7.3.15
 * Composer
@@ -13,7 +13,7 @@ Con este código, podrá conectarse rápidamente con el servicio de redirecciona
 Utilizando composer para tu proyecto
 
 ```
-composer require alejandr0pg/redirection
+composer require alejandr0pg/pago-millas-sdk
 ```
 
 O bien, si solo desea ejecutar los ejemplos contenidos en este proyecto, 
