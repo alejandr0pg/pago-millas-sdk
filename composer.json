@@ -1,8 +1,14 @@
 {
-    "name": "placetopay/mile-pay-sdk",
+    "name": "alejandr0pg/pago-millas-sdk",
     "description": "SDK para el pago con millas para Placetopay. ",
-    "type": "package",
+    "type": "library",
     "license": "MIT",
+    "authors": [
+        {
+          "name": "Williams A. Pérez",
+          "email": "alejandro@galej.net"
+        }
+    ],
     "scripts": {
         "test": "phpunit  --testdox tests"
     },
@@ -22,6 +28,7 @@
         }
     },
     "require": {
+        "php": ">=7.3.14",
         "guzzlehttp/guzzle": "^6.5",
         "psr/cache": "^1.0@dev"
     }
