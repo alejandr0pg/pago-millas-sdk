@@ -1,5 +1,5 @@
 {
-    "name": "alejandr0pg/pago-millas-sdk",
+    "name": "placetopay/pago-millas-sdk",
     "description": "SDK para el pago con millas para Placetopay. ",
     "type": "library",
     "license": "MIT",

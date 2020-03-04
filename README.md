@@ -13,7 +13,7 @@ Con este código, podrá conectarse rápidamente con el servicio de redirecciona
 Utilizando composer para tu proyecto
 
 ```
-composer require alejandr0pg/pago-millas-sdk
+composer require placetopay/pago-millas-sdk
 ```
 
 O bien, si solo desea ejecutar los ejemplos contenidos en este proyecto, 
