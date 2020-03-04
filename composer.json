@@ -13,15 +13,16 @@
     },
     "autoload": {
         "psr-4": {
-            "PlaceToPay\\": "src/"
+            "PlacetoPay\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "PlaceToPay\\": "test/"
+            "PlacetoPay\\": "test/"
         }
     },
     "require": {
-        "guzzlehttp/guzzle": "^6.5"
+        "guzzlehttp/guzzle": "^6.5",
+        "psr/cache": "^1.0@dev"
     }
 }
