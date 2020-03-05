@@ -11,8 +11,11 @@ use PlacetoPay\Models\CancelTransactionResponse;
 use PlacetoPay\Models\DebitPointsResponse;
 use PlacetoPay\Models\GetPointsResponse;
 use PlacetoPay\Models\LockPointsResponse;
-use PlacetoPay\Models\ReversePointResponse;
+use PlacetoPay\Models\ReversePointsResponse;
 
+/**
+ * Class AbstractPlaceToPayClient.
+ */
 abstract class AbstractPlaceToPayClient implements PlaceToPayClient
 {
     protected $api_url;
@@ -20,12 +23,21 @@ abstract class AbstractPlaceToPayClient implements PlaceToPayClient
     protected $client_id;
     protected $client_secret;
     protected $http_client;
-    protected $client_type;
     protected $authToken;
     protected $refreshToken;
     protected $expireAt;
     protected $cache;
 
+    /**
+     * AbstractPlaceToPayClient constructor.
+     *
+     * @param $http_client
+     * @param $api_url
+     * @param $redirect_url
+     * @param $client_id
+     * @param $client_secret
+     * @param $cache
+     */
     protected function __construct(
         $http_client,
         $api_url,
@@ -38,9 +50,14 @@ abstract class AbstractPlaceToPayClient implements PlaceToPayClient
         $this->redirect_url = $redirect_url;
         $this->http_client = $http_client;
         $this->cache = $cache;
+
         $this->init($client_id, $client_secret);
     }
 
+    /**
+     * @param $client_id
+     * @param $client_secret
+     */
     private function init(
         $client_id,
         $client_secret
@@ -52,6 +69,10 @@ abstract class AbstractPlaceToPayClient implements PlaceToPayClient
         }
     }
 
+    /**
+     * @param $points
+     * @return DebitPointsResponse
+     */
     public function lockAndDebitPoints($points): DebitPointsResponse
     {
         $lockPointResult = $this->lockPoints($points);
@@ -59,10 +80,14 @@ abstract class AbstractPlaceToPayClient implements PlaceToPayClient
         if ($lockPointResult->isSuccessful()) {
             return $this->debitPoints($lockPointResult->getDocumentId());
         } else {
-            return $lockPointResult->getMessage();
+            return new DebitPointsResponse($lockPointResult->getMessage());
         }
     }
 
+    /**
+     * @param $merchantId
+     * @return GetPointsResponse
+     */
     public function getPoints($merchantId): GetPointsResponse
     {
         $response = $this->makeGetRequest("getPoints?merchant_id={$merchantId}");
@@ -70,6 +95,10 @@ abstract class AbstractPlaceToPayClient implements PlaceToPayClient
         return new GetPointsResponse($response->getBody());
     }
 
+    /**
+     * @param $points
+     * @return LockPointsResponse
+     */
     public function lockPoints($points): LockPointsResponse
     {
         $response = $this->makePostRequest('lockPoints', ['points' => $points]);
@@ -77,6 +106,10 @@ abstract class AbstractPlaceToPayClient implements PlaceToPayClient
         return new LockPointsResponse($response->getBody());
     }
 
+    /**
+     * @param $documentId
+     * @return DebitPointsResponse
+     */
     public function debitPoints($documentId): DebitPointsResponse
     {
         $this->makePostRequest('debitPoints', ['document_id' => $documentId]);
@@ -84,6 +117,10 @@ abstract class AbstractPlaceToPayClient implements PlaceToPayClient
         return new DebitPointsResponse();
     }
 
+    /**
+     * @param $documentId
+     * @return CancelTransactionResponse
+     */
     public function cancelTransaction($documentId): CancelTransactionResponse
     {
         $response = $this->makePostRequest('cancelTransaction', ['document_id' => $documentId]);
@@ -91,13 +128,21 @@ abstract class AbstractPlaceToPayClient implements PlaceToPayClient
         return new CancelTransactionResponse($response->getBody());
     }
 
-    public function reversePoint($documentId): ReversePointResponse
+    /**
+     * @param $documentId
+     * @return ReversePointsResponse
+     */
+    public function reversePoint($documentId): ReversePointsResponse
     {
         $response = $this->makePostRequest('reversePoints', ['document_id' => $documentId]);
 
-        return new ReversePointResponse($response->getBody());
+        return new ReversePointsResponse($response->getBody());
     }
 
+    /**
+     * @param $apiTransaction
+     * @return PlaceToPayClient
+     */
     protected function makeGetRequest($apiTransaction)
     {
         try {
@@ -106,12 +151,17 @@ abstract class AbstractPlaceToPayClient implements PlaceToPayClient
                 $this->buildHeaders()
             );
         } catch (PlaceToPayException $e) {
-            return new PlaceToPayClient(null, $e->getErrorCode(), $e->getMessage());
+            return new PlaceToPayClient(null, $e->getErrorCode(), $e->getMessage()); //Return a new interface??
         } catch (Exception $e) {
-            return new PlaceToPayClient(null, null, $e->getMessage());
+            return new PlaceToPayClient(null, null, $e->getMessage()); //Return a new interface??
         }
     }
 
+    /**
+     * @param $apiTransaction
+     * @param $body
+     * @return PlaceToPayClient
+     */
     protected function makePostRequest($apiTransaction, $body)
     {
         try {
@@ -121,12 +171,16 @@ abstract class AbstractPlaceToPayClient implements PlaceToPayClient
                 $body
             );
         } catch (PlaceToPayException $e) {
-            return new PlaceToPayClient(null, $e->getErrorCode(), $e->getMessage());
+            return new PlaceToPayClient(null, $e->getErrorCode(), $e->getMessage()); //Return a new interface??
         } catch (Exception $e) {
-            return new PlaceToPayClient(null, null, $e->getMessage());
+            return new PlaceToPayClient(null, null, $e->getMessage()); //Return a new interface??
         }
     }
 
+    /**
+     * @return array
+     * @throws PlaceToPayException
+     */
     protected function buildHeaders(): array
     {
         if (! isset($this->authToken)) {
@@ -144,16 +198,25 @@ abstract class AbstractPlaceToPayClient implements PlaceToPayClient
         ];
     }
 
+    /**
+     * @return mixed
+     */
     protected function tokenExpired()
     {
         return $this->cache->hasItem('access_token');
     }
 
+    /**
+     * Function used to refresh token.
+     */
     protected function refreshToken()
     {
         $this->getBearerToken($this->client_id, $this->client_secret);
     }
 
+    /**
+     * @param $result
+     */
     protected function storeToken($result)
     {
         $this->authToken = $result['access_token'];
@@ -167,23 +230,38 @@ abstract class AbstractPlaceToPayClient implements PlaceToPayClient
         $this->storeValueInCache('client_secret', $this->client_secret);
     }
 
+    /**
+     * @param $client_id
+     * @param $client_secret
+     */
     private function getBearerToken($client_id, $client_secret)
     {
         $url = "{$this->api_url}/oauth2/token?grant_type=authorization_code&client_id={$client_id}
-        &client_secret={$client_secret}&scope=write&redirect_uri={$this->redirect_url}";
+            &client_secret={$client_secret}&scope=write&redirect_uri={$this->redirect_url}";
+
         $response = $this->http_client->get($url, []);
+
         $this->storeToken(json_decode($response->getBody(), true));
     }
 
+    /**
+     * @param $key
+     * @param $value
+     * @param null $expireAt
+     */
     private function storeValueInCache($key, $value, $expireAt = null)
     {
         $item = $this->cache->getItem($key);
         $item->set($value);
+
         if ($expireAt != null) {
             $item->expiresAfter($this->expireAt);
         }
     }
 
+    /**
+     * Function used to load data stored in session.
+     */
     private function loadSessionData()
     {
         $this->authToken = $this->cache->getItem('access_token');

@@ -2,16 +2,18 @@
 
 declare(strict_types=1);
 
-use Mockery as mocker;
 use PHPUnit\Framework\TestCase;
 use PlacetoPay\Exception\PlaceToPayException;
 use PlacetoPay\HTTPClient\GuzzleHttpClient;
 use PlacetoPay\HTTPClient\Model\HTTPResponse;
 
+/**
+ * Class GuzzleHttpClientTest.
+ */
 final class GuzzleHttpClientTest extends TestCase
 {
-
-    public function testCanBeCreatedFromDefaultConstructor(): void
+    /** @test */
+    public function canBeCreatedFromDefaultConstructor(): void
     {
         $this->assertInstanceOf(
             GuzzleHttpClient::class,
@@ -19,11 +21,12 @@ final class GuzzleHttpClientTest extends TestCase
         );
     }
 
-    public function testShouldMakeAGetRequestToTheGivenUrlAndReturnAHttpResponseObject(): void
+    /** @test */
+    public function shouldMakeAGetRequestToTheGivenUrlAndReturnAHttpResponseObject(): void
     {
         $client = new GuzzleHttpClient();
 
-        $response = $client->get("http://google.com", null);
+        $response = $client->get('http://google.com', null);
 
         $this->assertInstanceOf(
             HTTPResponse::class,
@@ -31,19 +34,19 @@ final class GuzzleHttpClientTest extends TestCase
         );
     }
 
-    public function testShouldMakeAGetRequestToTheGivenUrlAndReturnAHttpResponseObjectWithStatus200(): void
+    /** @test */
+    public function shouldMakeAGetRequestToTheGivenUrlAndReturnAHttpResponseObjectWithStatus200(): void
     {
         $client = new GuzzleHttpClient();
-        $response = $client->get("http://google.com",  []);
+        $response = $client->get('http://google.com', []);
         $statusCode = $response->getStatusCode();
         $this->assertTrue(
             $statusCode === 200
         );
     }
 
-
-
-    public function testShouldThrowAnInvalidGrantException(): void
+    /** @test */
+    public function shouldThrowAnInvalidGrantException(): void
     {
         $this->expectException(PlaceToPayException::class);
         $client = new GuzzleHttpClient();
@@ -51,17 +54,18 @@ final class GuzzleHttpClientTest extends TestCase
             ['Content-Type' => 'application/json'],
             401,
             json_encode([
-                "error" => "invalid_grant",
-                "error_description" => "he provided authorization grant (e.g., authorization code, resource owner credentials) or refresh token is invalid, expired, revoked, 
-                does not match the redirection URI used in the authorization request, or was issued to another client"
+                'error' => 'invalid_grant',
+                'error_description' => 'he provided authorization grant (e.g., authorization code, resource owner credentials) or refresh token is invalid, expired, revoked, 
+                does not match the redirection URI used in the authorization request, or was issued to another client',
             ])
         ));
     }
 
-    public function testShouldMakeAPostRequestToReturningWithStatusCode201(): void
+    /** @test */
+    public function shouldMakeAPostRequestToReturningWithStatusCode201(): void
     {
         $client = new GuzzleHttpClient();
-        $response =  $client->handleResponse(new HTTPResponse(
+        $response = $client->handleResponse(new HTTPResponse(
             ['Content-Type' => 'application/json'],
             201,
             json_encode([])

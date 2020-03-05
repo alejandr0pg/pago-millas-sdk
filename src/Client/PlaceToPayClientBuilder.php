@@ -9,6 +9,9 @@ use PlacetoPay\Exception\PlaceToPayException;
 use PlacetoPay\HTTPClient\Enums\HTTPClientType;
 use PlacetoPay\HTTPClient\GuzzleHttpClient;
 
+/**
+ * Class PlaceToPayClientBuilder.
+ */
 final class PlaceToPayClientBuilder
 {
     public static function builder()
@@ -16,6 +19,10 @@ final class PlaceToPayClientBuilder
         return new ClientBuilder();
     }
 }
+
+/**
+ * Class ClientBuilder.
+ */
 class ClientBuilder
 {
     private $http_client;
@@ -26,24 +33,37 @@ class ClientBuilder
     // TODO: posiblmente no sea el mejor nombre para esta variable
     private $cache;
 
+    /**
+     * ClientBuilder constructor.
+     */
     public function __construct()
     {
     }
 
+    /**
+     * @param $clientType
+     * @return $this
+     */
     public function withHTTPClient($clientType): self
     {
         switch ($clientType) {
             case HTTPClientType::GUZZLE_CLIENT:
                 $this->http_client = new GuzzleHttpClient();
+
                 break;
             default:
                 $this->http_client = null;
+
                 break;
         }
 
         return $this;
     }
 
+    /**
+     * @param $apiUrl
+     * @return $this
+     */
     public function withApiUrl($apiUrl): self
     {
         $this->api_url = $apiUrl;
@@ -51,6 +71,10 @@ class ClientBuilder
         return $this;
     }
 
+    /**
+     * @param $redirectUrl
+     * @return $this
+     */
     public function withRedirectUrl($redirectUrl): self
     {
         $this->redirect_url = $redirectUrl;
@@ -58,6 +82,10 @@ class ClientBuilder
         return $this;
     }
 
+    /**
+     * @param $cache
+     * @return $this
+     */
     public function withCache($cache): self
     {
         $this->cache = $cache;
@@ -65,6 +93,10 @@ class ClientBuilder
         return $this;
     }
 
+    /**
+     * @param $clientId
+     * @return $this
+     */
     public function withClientId($clientId): self
     {
         $this->client_id = $clientId;
@@ -72,6 +104,10 @@ class ClientBuilder
         return $this;
     }
 
+    /**
+     * @param $clientSecret
+     * @return $this
+     */
     public function withClientSecret($clientSecret): self
     {
         $this->client_secret = $clientSecret;
@@ -79,6 +115,10 @@ class ClientBuilder
         return $this;
     }
 
+    /**
+     * @return PlaceToPayClient
+     * @throws PlaceToPayException
+     */
     public function build(): PlaceToPayClient
     {
         if (! isset($this->http_client)) {
@@ -97,7 +137,7 @@ class ClientBuilder
             throw new PlaceToPayException('you must provide a psr6 cache implementation');
         }
 
-        $client = new DefaultPlaceToPayClient(
+        return new DefaultPlaceToPayClient(
             $this->http_client,
             $this->api_url,
             $this->redirect_url,
@@ -105,7 +145,5 @@ class ClientBuilder
             $this->client_secret,
             $this->cache
         );
-
-        return $client;
     }
 }
