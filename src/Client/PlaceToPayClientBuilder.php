@@ -12,7 +12,6 @@ use PlacetoPay\HTTPClient\Interfaces\HTTPClient;
 
 final class PlaceToPayClientBuilder
 {
-
     public static function builder()
     {
         return new ClientBuilder();
@@ -20,16 +19,15 @@ final class PlaceToPayClientBuilder
 }
 class ClientBuilder
 {
-
-    private  $http_client;
-    private  $api_url;
-    private  $client_id;
-    private  $client_secret;
-    private  $redirect_url;
+    private $http_client;
+    private $api_url;
+    private $client_id;
+    private $client_secret;
+    private $redirect_url;
     // TODO: posiblmente no sea el mejor nombre para esta variable
-    private  $cache;
+    private $cache;
 
-    function __construct()
+    public function __construct()
     {
     }
 

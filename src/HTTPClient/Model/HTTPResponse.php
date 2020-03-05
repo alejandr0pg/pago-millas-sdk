@@ -4,11 +4,11 @@ namespace PlacetoPay\HTTPClient\Model;
 
 class HTTPResponse
 {
-    private  $status_code;
-    private  $headers;
-    private  $body;
+    private $status_code;
+    private $headers;
+    private $body;
 
-    function __construct($headers,  $statusCode,  $body)
+    public function __construct($headers, $statusCode, $body)
     {
         $this->headers = $headers;
         $this->status_code = $statusCode;

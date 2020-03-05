@@ -9,15 +9,13 @@ use PlacetoPay\Exception\ExceptionFactory;
 use PlacetoPay\HTTPClient\Interfaces\HTTPClient;
 use PlacetoPay\HTTPClient\Model\HTTPResponse;
 
-
 class GuzzleHttpClient implements HTTPClient
 {
-
     public function __construct()
     {
     }
 
-    function get($url, $headers): ?HTTPResponse
+    public function get($url, $headers): ?HTTPResponse
     {
         $client = $this->buildClient();
         $response = $client->get($url, $headers);
@@ -25,15 +23,14 @@ class GuzzleHttpClient implements HTTPClient
     }
 
 
-    function post($url, $headers, $body): ?HTTPResponse
+    public function post($url, $headers, $body): ?HTTPResponse
     {
-
         $client = $this->buildClient();
         $response = $client->post($url, ['body' =>  json_encode($body), 'headers' => $headers]);
         return $this->handleResponse($response);
     }
 
-    function  put($url,  $headers): ?HTTPResponse
+    public function put($url, $headers): ?HTTPResponse
     {
         return null;
     }

@@ -6,7 +6,6 @@ namespace PlacetoPay\Models;
 
 class PlaceToPayResponse
 {
-
     private $message;
     private $errorMessage;
     private $errorCode;

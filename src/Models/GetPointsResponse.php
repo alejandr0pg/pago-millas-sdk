@@ -6,7 +6,6 @@ namespace PlacetoPay\Models;
 
 class GetPointsResponse extends PlaceToPayResponse
 {
-
     private $miles;
     private $index_conversion;
 

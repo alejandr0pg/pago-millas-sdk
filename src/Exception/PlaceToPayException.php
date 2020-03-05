@@ -8,9 +8,8 @@ use Exception;
 
 class PlaceToPayException extends Exception
 {
-
     private $errorCode;
-    public function __construct($errorCode = null,  $message = null)
+    public function __construct($errorCode = null, $message = null)
     {
         $this->errorCode = $errorCode;
         parent::__construct($message);

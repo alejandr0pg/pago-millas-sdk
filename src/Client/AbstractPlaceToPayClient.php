@@ -19,17 +19,16 @@ use Psr\Cache\CacheItemPoolInterface;
 
 abstract class AbstractPlaceToPayClient implements PlaceToPayClient
 {
-
-    protected  $api_url;
-    protected  $redirect_url;
-    protected  $client_id;
-    protected  $client_secret;
-    protected  $http_client;
-    protected  $client_type;
-    protected  $authToken;
-    protected  $refreshToken;
-    protected  $expireAt;
-    protected  $cache;
+    protected $api_url;
+    protected $redirect_url;
+    protected $client_id;
+    protected $client_secret;
+    protected $http_client;
+    protected $client_type;
+    protected $authToken;
+    protected $refreshToken;
+    protected $expireAt;
+    protected $cache;
 
     protected function __construct(
         $http_client,
@@ -51,7 +50,6 @@ abstract class AbstractPlaceToPayClient implements PlaceToPayClient
         $client_id,
         $client_secret
     ) {
-
         if ($this->tokenExpired()) {
             $this->loadSessionData();
         } else {
@@ -63,7 +61,12 @@ abstract class AbstractPlaceToPayClient implements PlaceToPayClient
     public function lockAndDebitPoints($points): DebitPointsResponse
     {
         $lockPointResult = $this->lockPoints($points);
-        return $this->debitPoints($lockPointResult->getDocumentId());
+
+        if ($lockPointResult->isSuccessful()) {
+            return $this->debitPoints($lockPointResult->getDocumentId());
+        } else {
+            return $lockPointResult->getMessage();
+        }
     }
 
     public function getPoints($merchantId): GetPointsResponse
@@ -96,7 +99,7 @@ abstract class AbstractPlaceToPayClient implements PlaceToPayClient
         return new ReversePointResponse($response->getBody());
     }
 
-    protected function  makeGetRequest($apiTransaction)
+    protected function makeGetRequest($apiTransaction)
     {
         try {
             return $this->http_client->get(
@@ -127,7 +130,6 @@ abstract class AbstractPlaceToPayClient implements PlaceToPayClient
 
     protected function buildHeaders(): array
     {
-
         if (!isset($this->authToken)) {
             throw new PlaceToPayException(401, "Missing access token");
         }
@@ -159,14 +161,14 @@ abstract class AbstractPlaceToPayClient implements PlaceToPayClient
         $this->refreshToken = $result['refresh_token'];
         $this->expireAt  = $result['expire_at'];
 
-        $this->storeValueInCache('access_token',  $this->authToken,  $this->expireAt);
-        $this->storeValueInCache('refresh_token',  $this->refreshToken);
-        $this->storeValueInCache('expire_at',  $this->expireAt);
-        $this->storeValueInCache('client_id',  $this->client_id);
-        $this->storeValueInCache('client_secret',  $this->client_secret);
+        $this->storeValueInCache('access_token', $this->authToken, $this->expireAt);
+        $this->storeValueInCache('refresh_token', $this->refreshToken);
+        $this->storeValueInCache('expire_at', $this->expireAt);
+        $this->storeValueInCache('client_id', $this->client_id);
+        $this->storeValueInCache('client_secret', $this->client_secret);
     }
 
-    private function getBearerToken($client_id,  $client_secret)
+    private function getBearerToken($client_id, $client_secret)
     {
         $url = "{$this->api_url}/oauth2/token?grant_type=authorization_code&client_id={$client_id}
         &client_secret={$client_secret}&scope=write&redirect_uri={$this->redirect_url}";
