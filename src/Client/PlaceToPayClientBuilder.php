@@ -8,7 +8,6 @@ use PlacetoPay\Client\Interfaces\PlaceToPayClient;
 use PlacetoPay\Exception\PlaceToPayException;
 use PlacetoPay\HTTPClient\Enums\HTTPClientType;
 use PlacetoPay\HTTPClient\GuzzleHttpClient;
-use PlacetoPay\HTTPClient\Interfaces\HTTPClient;
 
 final class PlaceToPayClientBuilder
 {
@@ -31,65 +30,71 @@ class ClientBuilder
     {
     }
 
-    public function withHTTPClient($clientType): ClientBuilder
+    public function withHTTPClient($clientType): self
     {
         switch ($clientType) {
             case HTTPClientType::GUZZLE_CLIENT:
-                $this->http_client =  new GuzzleHttpClient();
+                $this->http_client = new GuzzleHttpClient();
                 break;
             default:
                 $this->http_client = null;
                 break;
         }
+
         return $this;
     }
 
-    public function withApiUrl($apiUrl): ClientBuilder
+    public function withApiUrl($apiUrl): self
     {
         $this->api_url = $apiUrl;
+
         return $this;
     }
 
-    public function withRedirectUrl($redirectUrl): ClientBuilder
+    public function withRedirectUrl($redirectUrl): self
     {
         $this->redirect_url = $redirectUrl;
+
         return $this;
     }
 
-    public function withCache($cache): ClientBuilder
+    public function withCache($cache): self
     {
         $this->cache = $cache;
+
         return $this;
     }
 
-    public function withClientId($clientId): ClientBuilder
+    public function withClientId($clientId): self
     {
         $this->client_id = $clientId;
+
         return $this;
     }
 
-    public function withClientSecret($clientSecret): ClientBuilder
+    public function withClientSecret($clientSecret): self
     {
         $this->client_secret = $clientSecret;
+
         return $this;
     }
 
     public function build(): PlaceToPayClient
     {
-        if (!isset($this->http_client)) {
-            $this->http_client =  new GuzzleHttpClient();
+        if (! isset($this->http_client)) {
+            $this->http_client = new GuzzleHttpClient();
         }
 
-        if (!isset($this->redirect_url)) {
-            throw new PlaceToPayException("you must provide a redirect url");
+        if (! isset($this->redirect_url)) {
+            throw new PlaceToPayException('you must provide a redirect url');
         }
 
-        if (!isset($this->api_url)) {
-            throw new PlaceToPayException("you must provide a api url");
+        if (! isset($this->api_url)) {
+            throw new PlaceToPayException('you must provide a api url');
         }
 
-        if (!isset($this->cache)) {
-            throw new PlaceToPayException("you must provide a psr6 cache implementation");
+        if (! isset($this->cache)) {
+            throw new PlaceToPayException('you must provide a psr6 cache implementation');
         }
 
         $client = new DefaultPlaceToPayClient(

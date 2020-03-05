@@ -18,7 +18,6 @@ class LockPointsResponse extends PlaceToPayResponse
         parent::__construct($parsedData['Message'], $errorMessage, $errorCode);
     }
 
-
     public function getMiles()
     {
         return $this->miles;

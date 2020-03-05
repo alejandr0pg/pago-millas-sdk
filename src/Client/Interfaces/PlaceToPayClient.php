@@ -8,7 +8,6 @@ use PlacetoPay\Models\CancelTransactionResponse;
 use PlacetoPay\Models\DebitPointsResponse;
 use PlacetoPay\Models\GetPointsResponse;
 use PlacetoPay\Models\LockPointsResponse;
-use PlacetoPay\Models\PlaceToPayResponse;
 use PlacetoPay\Models\ReversePointResponse;
 
 interface PlaceToPayClient

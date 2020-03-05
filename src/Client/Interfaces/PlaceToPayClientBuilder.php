@@ -6,13 +6,13 @@ namespace PlacetoPay\Client\Interfaces;
 
 interface PlaceToPayClientBuilder
 {
-    public function withApiUrl($baseURL): PlaceToPayClientBuilder;
+    public function withApiUrl($baseURL): self;
 
-    public function withUsername($username): PlaceToPayClientBuilder;
+    public function withUsername($username): self;
 
-    public function withPassword($password): PlaceToPayClientBuilder;
+    public function withPassword($password): self;
 
-    public function withLogger($logger): PlaceToPayClientBuilder;
+    public function withLogger($logger): self;
 
     public function build(): PlaceToPayClient;
 }

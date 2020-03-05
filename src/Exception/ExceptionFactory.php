@@ -11,7 +11,7 @@ class ExceptionFactory
         if (isset($body)) {
             $errorData = json_decode($body, true);
             if ((isset($errorData['Data']['error']) && isset($errorData['Message']))) {
-                return ExceptionFactory::buildTransactionExceptions($errorData['Data']['error'], $errorData['Message']);
+                return self::buildTransactionExceptions($errorData['Data']['error'], $errorData['Message']);
             } elseif (isset($errorData['error']) && isset($errorData['error_description'])) {
                 return new PlaceToPayException($errorData['error'], $errorData['error_description']);
             }

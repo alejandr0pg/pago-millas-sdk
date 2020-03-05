@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace PlacetoPay\Client;
 
-use DateInterval;
-use DateTime;
 use Exception;
 use PlacetoPay\Client\Interfaces\PlaceToPayClient;
 use PlacetoPay\Exception\PlaceToPayException;
@@ -13,9 +11,7 @@ use PlacetoPay\Models\CancelTransactionResponse;
 use PlacetoPay\Models\DebitPointsResponse;
 use PlacetoPay\Models\GetPointsResponse;
 use PlacetoPay\Models\LockPointsResponse;
-use PlacetoPay\Models\PlaceToPayResponse;
 use PlacetoPay\Models\ReversePointResponse;
-use Psr\Cache\CacheItemPoolInterface;
 
 abstract class AbstractPlaceToPayClient implements PlaceToPayClient
 {
@@ -45,7 +41,6 @@ abstract class AbstractPlaceToPayClient implements PlaceToPayClient
         $this->init($client_id, $client_secret);
     }
 
-
     private function init(
         $client_id,
         $client_secret
@@ -56,7 +51,6 @@ abstract class AbstractPlaceToPayClient implements PlaceToPayClient
             $this->getBearerToken($client_id, $client_secret);
         }
     }
-
 
     public function lockAndDebitPoints($points): DebitPointsResponse
     {
@@ -72,30 +66,35 @@ abstract class AbstractPlaceToPayClient implements PlaceToPayClient
     public function getPoints($merchantId): GetPointsResponse
     {
         $response = $this->makeGetRequest("getPoints?merchant_id={$merchantId}");
+
         return new GetPointsResponse($response->getBody());
     }
 
     public function lockPoints($points): LockPointsResponse
     {
-        $response = $this->makePostRequest("lockPoints", ['points' => $points]);
+        $response = $this->makePostRequest('lockPoints', ['points' => $points]);
+
         return new LockPointsResponse($response->getBody());
     }
 
     public function debitPoints($documentId): DebitPointsResponse
     {
-        $this->makePostRequest("debitPoints", ['document_id' => $documentId]);
+        $this->makePostRequest('debitPoints', ['document_id' => $documentId]);
+
         return new DebitPointsResponse();
     }
 
     public function cancelTransaction($documentId): CancelTransactionResponse
     {
-        $response = $this->makePostRequest("cancelTransaction", ['document_id' => $documentId]);
+        $response = $this->makePostRequest('cancelTransaction', ['document_id' => $documentId]);
+
         return new CancelTransactionResponse($response->getBody());
     }
 
     public function reversePoint($documentId): ReversePointResponse
     {
-        $response = $this->makePostRequest("reversePoints", ['document_id' => $documentId]);
+        $response = $this->makePostRequest('reversePoints', ['document_id' => $documentId]);
+
         return new ReversePointResponse($response->getBody());
     }
 
@@ -130,8 +129,8 @@ abstract class AbstractPlaceToPayClient implements PlaceToPayClient
 
     protected function buildHeaders(): array
     {
-        if (!isset($this->authToken)) {
-            throw new PlaceToPayException(401, "Missing access token");
+        if (! isset($this->authToken)) {
+            throw new PlaceToPayException(401, 'Missing access token');
         }
 
         if ($this->tokenExpired()) {
@@ -141,7 +140,7 @@ abstract class AbstractPlaceToPayClient implements PlaceToPayClient
         return [
             'Content-Type' => 'application/json',
             'Accept' => 'application/json',
-            'Authorization' => "Bearer {$this->authToken}"
+            'Authorization' => "Bearer {$this->authToken}",
         ];
     }
 
@@ -159,7 +158,7 @@ abstract class AbstractPlaceToPayClient implements PlaceToPayClient
     {
         $this->authToken = $result['access_token'];
         $this->refreshToken = $result['refresh_token'];
-        $this->expireAt  = $result['expire_at'];
+        $this->expireAt = $result['expire_at'];
 
         $this->storeValueInCache('access_token', $this->authToken, $this->expireAt);
         $this->storeValueInCache('refresh_token', $this->refreshToken);
@@ -187,10 +186,10 @@ abstract class AbstractPlaceToPayClient implements PlaceToPayClient
 
     private function loadSessionData()
     {
-        $this->authToken = $this->cache->getItem("access_token");
-        $this->refreshToken =   $this->cache->getItem("refresh_token");
-        $this->expireAt =    $this->cache->getItem("expire_at");
-        $this->client_id =    $this->cache->getItem("client_id");
-        $this->client_secret =    $this->cache->getItem("client_secret");
+        $this->authToken = $this->cache->getItem('access_token');
+        $this->refreshToken = $this->cache->getItem('refresh_token');
+        $this->expireAt = $this->cache->getItem('expire_at');
+        $this->client_id = $this->cache->getItem('client_id');
+        $this->client_secret = $this->cache->getItem('client_secret');
     }
 }

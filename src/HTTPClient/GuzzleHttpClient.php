@@ -19,14 +19,15 @@ class GuzzleHttpClient implements HTTPClient
     {
         $client = $this->buildClient();
         $response = $client->get($url, $headers);
+
         return $this->handleResponse($response);
     }
-
 
     public function post($url, $headers, $body): ?HTTPResponse
     {
         $client = $this->buildClient();
         $response = $client->post($url, ['body' =>  json_encode($body), 'headers' => $headers]);
+
         return $this->handleResponse($response);
     }
 
@@ -50,7 +51,6 @@ class GuzzleHttpClient implements HTTPClient
             );
         }
     }
-
 
     public function buildClient()
     {

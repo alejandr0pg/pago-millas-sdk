@@ -10,7 +10,8 @@
         }
     ],
     "scripts": {
-        "test": "phpunit  --testdox tests"
+        "test": "phpunit  --testdox tests",
+        "php-cs-fixer": "php-cs-fixer fix --config=.php-cs src/"
     },
     "minimum-stability": "dev",
     "require-dev": {
