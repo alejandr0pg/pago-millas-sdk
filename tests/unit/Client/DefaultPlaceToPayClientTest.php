@@ -2,23 +2,20 @@
 
 declare(strict_types=1);
 
+use Mockery as mocker;
 use PHPUnit\Framework\TestCase;
 use PlacetoPay\Client\DefaultPlaceToPayClient;
-use PlacetoPay\Models\PlaceToPayResponse;
-use Mockery as mocker;
-use PlacetoPay\Exception\PlaceToPayException;
 use PlacetoPay\HTTPClient\Model\HTTPResponse;
 use PlacetoPay\Models\DebitPointsResponse;
 use PlacetoPay\Models\LockPointsResponse;
 
-use function PHPUnit\Framework\assertThat;
-use function PHPUnit\Framework\equalTo;
-
+/**
+ * Class DefaultPlaceToPayClientTest.
+ */
 final class DefaultPlaceToPayClientTest extends TestCase
 {
-
-
-    public function testShouldCreateADefaultPlaceToPayClient(): void
+    /** @test */
+    public function shouldCreateADefaultPlaceToPayClient(): void
     {
         $defaultPlaceToPayClient = $this->buildClient();
         $this->assertInstanceOf(
@@ -27,8 +24,8 @@ final class DefaultPlaceToPayClientTest extends TestCase
         );
     }
 
-
-    public function testShouldReturnAPlaceToPayResponseWithDataWhenAskingForPoints(): void
+    /** @test */
+    public function shouldReturnAPlaceToPayResponseWithDataWhenAskingForPoints(): void
     {
         $defaultPlaceToPayClient = $this->buildClient();
         $httpClient = mocker::mock('PlacetoPay\HTTPClient\GuzzleHttpClient');
@@ -41,27 +38,26 @@ final class DefaultPlaceToPayClientTest extends TestCase
                 ['Content-Type' => 'application/json'],
                 200,
                 json_encode([
-                    "Data" => ["miles" => 0, "index_conversion" => 0],
-                    "Message" => "test message"
+                    'Data' => ['miles' => 0, 'index_conversion' => 0],
+                    'Message' => 'test message',
                 ])
             ));
 
         $this->mockProperty($defaultPlaceToPayClient, 'api_url', 'localhost:8080');
         $this->mockProperty($defaultPlaceToPayClient, 'authToken', 'authToken');
-        $this->mockProperty($defaultPlaceToPayClient, 'http_client',  $httpClient);
-        $this->mockProperty($defaultPlaceToPayClient, 'expireAt',  '7200');
-        $this->mockProperty($defaultPlaceToPayClient, 'refreshToken',  'authToken');
+        $this->mockProperty($defaultPlaceToPayClient, 'http_client', $httpClient);
+        $this->mockProperty($defaultPlaceToPayClient, 'expireAt', '7200');
+        $this->mockProperty($defaultPlaceToPayClient, 'refreshToken', 'authToken');
 
-
-        $response = $defaultPlaceToPayClient->getPoints("test");
+        $response = $defaultPlaceToPayClient->getPoints('test');
 
         $this->assertEqualsIgnoringCase($response->getMiles(), 0);
         $this->assertEqualsIgnoringCase($response->getIndexOfConversion(), 0);
         $this->assertEqualsIgnoringCase($response->getMessage(), 'test message');
     }
 
-
-    public function testShouldReturnAPlaceToPayResponseWithDataContainingDocumentIdAndMilesWhenLockingPoints(): void
+    /** @test */
+    public function shouldReturnAPlaceToPayResponseWithDataContainingDocumentIdAndMilesWhenLockingPoints(): void
     {
         $defaultPlaceToPayClient = $this->buildClient();
 
@@ -75,43 +71,39 @@ final class DefaultPlaceToPayClientTest extends TestCase
                 ['Content-Type' => 'application/json'],
                 200,
                 json_encode([
-                    "Data" => ["miles" => 1, "document_id" => 2],
-                    "Message" => "test message"
+                    'Data' => ['miles' => 1, 'document_id' => 2],
+                    'Message' => 'test message',
                 ])
             ));
 
         $this->mockProperty($defaultPlaceToPayClient, 'api_url', 'localhost:8080');
         $this->mockProperty($defaultPlaceToPayClient, 'authToken', 'authToken');
-        $this->mockProperty($defaultPlaceToPayClient, 'http_client',  $httpClient);
-        $this->mockProperty($defaultPlaceToPayClient, 'expireAt',  '7200');
-        $this->mockProperty($defaultPlaceToPayClient, 'refreshToken',  'authToken');
-
+        $this->mockProperty($defaultPlaceToPayClient, 'http_client', $httpClient);
+        $this->mockProperty($defaultPlaceToPayClient, 'expireAt', '7200');
+        $this->mockProperty($defaultPlaceToPayClient, 'refreshToken', 'authToken');
 
         $response = $defaultPlaceToPayClient->lockPoints(10);
 
         $this->assertEqualsIgnoringCase($response->getMiles(), 1);
         $this->assertEqualsIgnoringCase($response->getDocumentId(), 2);
-        $this->assertEqualsIgnoringCase($response->getMessage(), "test message");
+        $this->assertEqualsIgnoringCase($response->getMessage(), 'test message');
         $this->assertInstanceOf(
             LockPointsResponse::class,
             $response
         );
     }
 
-
-
-    public function testShouldLockAndDebitPoints(): void
+    /** @test */
+    public function shouldLockAndDebitPoints(): void
     {
-
         $defaultPlaceToPayClient = $this->buildClient();
         $httpClient = mocker::mock('PlacetoPay\HTTPClient\GuzzleHttpClient');
 
-
         $this->mockProperty($defaultPlaceToPayClient, 'api_url', 'localhost:8080');
         $this->mockProperty($defaultPlaceToPayClient, 'authToken', 'authToken');
-        $this->mockProperty($defaultPlaceToPayClient, 'http_client',  $httpClient);
-        $this->mockProperty($defaultPlaceToPayClient, 'expireAt',  '7200');
-        $this->mockProperty($defaultPlaceToPayClient, 'refreshToken',  'authToken');
+        $this->mockProperty($defaultPlaceToPayClient, 'http_client', $httpClient);
+        $this->mockProperty($defaultPlaceToPayClient, 'expireAt', '7200');
+        $this->mockProperty($defaultPlaceToPayClient, 'refreshToken', 'authToken');
 
         $defaultPlaceToPayClient->shouldReceive('tokenExpired')
             ->andReturn(false);
@@ -124,8 +116,8 @@ final class DefaultPlaceToPayClientTest extends TestCase
                 ['Content-Type' => 'application/json'],
                 200,
                 json_encode([
-                    "Data" => ["miles" => 0, "index_conversion" => 0],
-                    "Message" => "test message"
+                    'Data' => ['miles' => 0, 'index_conversion' => 0],
+                    'Message' => 'test message',
                 ])
             ));
 
@@ -138,6 +130,10 @@ final class DefaultPlaceToPayClientTest extends TestCase
         );
     }
 
+    /**
+     * @return mocker\Mock
+     * @throws ReflectionException
+     */
     private function buildClient()
     {
         $mock = mocker::mock('PlacetoPay\Client\DefaultPlaceToPayClient')
@@ -151,7 +147,13 @@ final class DefaultPlaceToPayClientTest extends TestCase
         return $mock;
     }
 
-    public  function mockProperty($object, $propertyName, $value)
+    /**
+     * @param $object
+     * @param $propertyName
+     * @param $value
+     * @throws ReflectionException
+     */
+    public function mockProperty($object, $propertyName, $value)
     {
         $reflectionClass = new \ReflectionClass($object);
         $property = $reflectionClass->getProperty($propertyName);

@@ -4,12 +4,20 @@ declare(strict_types=1);
 
 namespace PlacetoPay\Exception;
 
+/**
+ * Class ExceptionFactory.
+ */
 class ExceptionFactory
 {
+    /**
+     * @param $body
+     * @return PlaceToPayException
+     */
     public static function buildException($body): PlaceToPayException
     {
         if (isset($body)) {
             $errorData = json_decode($body, true);
+
             if ((isset($errorData['Data']['error']) && isset($errorData['Message']))) {
                 return self::buildTransactionExceptions($errorData['Data']['error'], $errorData['Message']);
             } elseif (isset($errorData['error']) && isset($errorData['error_description'])) {
@@ -20,6 +28,11 @@ class ExceptionFactory
         return  new PlaceToPayException();
     }
 
+    /**
+     * @param $code
+     * @param $message
+     * @return \Exception|ExpiredTokenException|IncorrectValueException|InsufficientBalanceException|NotValidTokenException|UnauthorizedException
+     */
     public static function buildTransactionExceptions($code, $message)
     {
         switch ($code) {
@@ -34,6 +47,8 @@ class ExceptionFactory
                 return new InsufficientBalanceException($code, $message);
             case 'UNAUTHORIZED':
                 return new UnauthorizedException($code, $message);
+            default:
+                return new \Exception($code, $message);
         }
     }
 }

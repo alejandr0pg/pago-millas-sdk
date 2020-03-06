@@ -460,3 +460,8 @@ composer.lock
 *.css.map
 *.sass.map
 *.scss.map
+
+#### PHPSTORM - PHPCSFIXER - PHPUNIT
+.idea
+.php_cs.cache
+.phpunit.result.cache
