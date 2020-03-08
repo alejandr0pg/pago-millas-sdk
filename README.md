@@ -27,15 +27,15 @@ Crear una instancia de la sdk a través del build constructor de la sdk
 use PlacetoPay\Client\ClientBuilder;
 use PlacetoPay\Client\PlaceToPayClientBuilder;
 
-//alguna implementacion de psr5/cache
-$cachePSR5 = new CacheImplementacion();
+//sustituir con alguna  implementacion de psr6/cache
+$cachePSR6 = new CacheImplementacion();
 
 $placeToPayClient = PlaceToPayClientBuilder::builder()
     ->withApiUrl('apiURL')
     ->withClientId('client_id')
     ->withClientSecret('client_secret')
     ->withRedirectUrl('redirectUrl')
-    ->withCache($cachePSR5)
+    ->withCache($cachePSR6)
     ->build();
 ```
 
