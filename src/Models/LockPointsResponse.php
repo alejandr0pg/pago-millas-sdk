@@ -21,11 +21,16 @@ class LockPointsResponse extends PlaceToPayResponse
      */
     public function __construct($payload, $errorMessage = null, $errorCode = null)
     {
-        $parsedData = json_decode($payload, true);
-        $this->miles = $parsedData['Data']['miles'];
-        $this->document_id = $parsedData['Data']['document_id'];
-
-        parent::__construct($parsedData['Message'], $errorMessage, $errorCode);
+        if ($payload != null) {
+            $parsedData = json_decode($payload, true);
+            if (isset($parsedData['Data']['miles']) && isset($parsedData['Data']['document_id'])) {
+                $this->miles = $parsedData['Data']['miles'];
+                $this->document_id = $parsedData['Data']['document_id'];
+            }
+            parent::__construct($parsedData['Message'], $errorMessage, $errorCode);
+        } else {
+            parent::__construct(null, $errorMessage, $errorCode);
+        }
     }
 
     /**

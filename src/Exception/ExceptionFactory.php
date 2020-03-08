@@ -37,8 +37,9 @@ class ExceptionFactory
     {
         switch ($code) {
             case 'NOT_VALID_TOKEN':
-            case 'NOT_VALID_DOCUMENT_ID':
                 return new NotValidTokenException($code, $message);
+            case 'NOT_VALID_DOCUMENT_ID':
+                return new NotValidDocumentIdException($code, $message);
             case 'EXPIRED_TOKEN':
                 return new ExpiredTokenException($code, $message);
             case 'INCORRECT_VALUE':

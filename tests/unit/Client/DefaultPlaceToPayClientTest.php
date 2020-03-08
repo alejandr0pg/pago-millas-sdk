@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Mockery as mocker;
 use PHPUnit\Framework\TestCase;
 use PlacetoPay\Client\DefaultPlaceToPayClient;
+use PlacetoPay\Exception\NotValidTokenException;
 use PlacetoPay\HTTPClient\Model\HTTPResponse;
 use PlacetoPay\Models\DebitPointsResponse;
 use PlacetoPay\Models\LockPointsResponse;
@@ -24,74 +25,7 @@ final class DefaultPlaceToPayClientTest extends TestCase
         );
     }
 
-    /** @test */
-    public function shouldReturnAPlaceToPayResponseWithDataWhenAskingForPoints(): void
-    {
-        $defaultPlaceToPayClient = $this->buildClient();
-        $httpClient = mocker::mock('PlacetoPay\HTTPClient\GuzzleHttpClient');
 
-        $defaultPlaceToPayClient->shouldReceive('tokenExpired')
-            ->andReturn(false);
-
-        $httpClient->shouldReceive('get')
-            ->andReturn(new HTTPResponse(
-                ['Content-Type' => 'application/json'],
-                200,
-                json_encode([
-                    'Data' => ['miles' => 0, 'index_conversion' => 0],
-                    'Message' => 'test message',
-                ])
-            ));
-
-        $this->mockProperty($defaultPlaceToPayClient, 'api_url', 'localhost:8080');
-        $this->mockProperty($defaultPlaceToPayClient, 'authToken', 'authToken');
-        $this->mockProperty($defaultPlaceToPayClient, 'http_client', $httpClient);
-        $this->mockProperty($defaultPlaceToPayClient, 'expireAt', '7200');
-        $this->mockProperty($defaultPlaceToPayClient, 'refreshToken', 'authToken');
-
-        $response = $defaultPlaceToPayClient->getPoints('test');
-
-        $this->assertEqualsIgnoringCase($response->getMiles(), 0);
-        $this->assertEqualsIgnoringCase($response->getIndexOfConversion(), 0);
-        $this->assertEqualsIgnoringCase($response->getMessage(), 'test message');
-    }
-
-    /** @test */
-    public function shouldReturnAPlaceToPayResponseWithDataContainingDocumentIdAndMilesWhenLockingPoints(): void
-    {
-        $defaultPlaceToPayClient = $this->buildClient();
-
-        $httpClient = mocker::mock('PlacetoPay\HTTPClient\GuzzleHttpClient');
-
-        $defaultPlaceToPayClient->shouldReceive('tokenExpired')
-            ->andReturn(false);
-
-        $httpClient->shouldReceive('post')
-            ->andReturn(new HTTPResponse(
-                ['Content-Type' => 'application/json'],
-                200,
-                json_encode([
-                    'Data' => ['miles' => 1, 'document_id' => 2],
-                    'Message' => 'test message',
-                ])
-            ));
-
-        $this->mockProperty($defaultPlaceToPayClient, 'api_url', 'localhost:8080');
-        $this->mockProperty($defaultPlaceToPayClient, 'authToken', 'authToken');
-        $this->mockProperty($defaultPlaceToPayClient, 'http_client', $httpClient);
-        $this->mockProperty($defaultPlaceToPayClient, 'expireAt', '7200');
-        $this->mockProperty($defaultPlaceToPayClient, 'refreshToken', 'authToken');
-
-        $response = $defaultPlaceToPayClient->lockPoints(10);
-
-        $this->assertEqualsIgnoringCase($response->getMiles(), 1);
-        $this->assertEqualsIgnoringCase($response->getDocumentId(), 2);
-        $this->assertEqualsIgnoringCase($response->getMessage(), 'test message');
-        $this->assertInstanceOf(
-            LockPointsResponse::class,
-            $response
-        );
-    }
 
     /** @test */
     public function shouldLockAndDebitPoints(): void

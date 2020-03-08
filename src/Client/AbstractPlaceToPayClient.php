@@ -7,10 +7,12 @@ namespace PlacetoPay\Client;
 use Exception;
 use PlacetoPay\Client\Interfaces\PlaceToPayClient;
 use PlacetoPay\Exception\PlaceToPayException;
+use PlacetoPay\HTTPClient\Model\HTTPResponse;
 use PlacetoPay\Models\CancelTransactionResponse;
 use PlacetoPay\Models\DebitPointsResponse;
 use PlacetoPay\Models\GetPointsResponse;
 use PlacetoPay\Models\LockPointsResponse;
+use PlacetoPay\Models\PlaceToPayResponse;
 use PlacetoPay\Models\ReversePointsResponse;
 
 /**
@@ -80,7 +82,7 @@ abstract class AbstractPlaceToPayClient implements PlaceToPayClient
         if ($lockPointResult->isSuccessful()) {
             return $this->debitPoints($lockPointResult->getDocumentId());
         } else {
-            return new DebitPointsResponse($lockPointResult->getMessage());
+            return new DebitPointsResponse($lockPointResult->getMessage(),  $lockPointResult->getErrorMessage(),   $lockPointResult->getErrorCode());
         }
     }
 
@@ -92,7 +94,7 @@ abstract class AbstractPlaceToPayClient implements PlaceToPayClient
     {
         $response = $this->makeGetRequest("getPoints?merchant_id={$merchantId}");
 
-        return new GetPointsResponse($response->getBody());
+        return new GetPointsResponse($response['body'], $response['errorMessage'], $response['errorCode']);
     }
 
     /**
@@ -103,7 +105,7 @@ abstract class AbstractPlaceToPayClient implements PlaceToPayClient
     {
         $response = $this->makePostRequest('lockPoints', ['points' => $points]);
 
-        return new LockPointsResponse($response->getBody());
+        return new LockPointsResponse($response['body'], $response['errorMessage'], $response['errorCode']);
     }
 
     /**
@@ -112,9 +114,9 @@ abstract class AbstractPlaceToPayClient implements PlaceToPayClient
      */
     public function debitPoints($documentId): DebitPointsResponse
     {
-        $this->makePostRequest('debitPoints', ['document_id' => $documentId]);
+        $response = $this->makePostRequest('debitPoints', ['document_id' => $documentId]);
 
-        return new DebitPointsResponse();
+        return new DebitPointsResponse($response['body'], $response['errorMessage'], $response['errorCode']);
     }
 
     /**
@@ -125,7 +127,7 @@ abstract class AbstractPlaceToPayClient implements PlaceToPayClient
     {
         $response = $this->makePostRequest('cancelTransaction', ['document_id' => $documentId]);
 
-        return new CancelTransactionResponse($response->getBody());
+        return new CancelTransactionResponse($response['body'], $response['errorMessage'], $response['errorCode']);
     }
 
     /**
@@ -136,24 +138,37 @@ abstract class AbstractPlaceToPayClient implements PlaceToPayClient
     {
         $response = $this->makePostRequest('reversePoints', ['document_id' => $documentId]);
 
-        return new ReversePointsResponse($response->getBody());
+        return new ReversePointsResponse($response['body'], $response['errorMessage'], $response['errorCode']);
     }
 
     /**
      * @param $apiTransaction
-     * @return PlaceToPayClient
+     * 
      */
     protected function makeGetRequest($apiTransaction)
     {
         try {
-            return $this->http_client->get(
+            $httpResponse =  $this->http_client->get(
                 "{$this->api_url}/{$apiTransaction}",
                 $this->buildHeaders()
             );
+            return [
+                'body' => $httpResponse->getBody(),
+                'errorMessage' => null,
+                'errorCode' => null
+            ];
         } catch (PlaceToPayException $e) {
-            return new PlaceToPayClient(null, $e->getErrorCode(), $e->getMessage()); //Return a new interface??
+            return [
+                'body' => null,
+                'errorMessage' => $e->getMessage(),
+                'errorCode' => $e->getErrorCode(),
+            ];
         } catch (Exception $e) {
-            return new PlaceToPayClient(null, null, $e->getMessage()); //Return a new interface??
+            return [
+                'body' => null,
+                'errorMessage' => $e->getMessage(),
+                'errorCode' => null,
+            ];
         }
     }
 
@@ -165,15 +180,28 @@ abstract class AbstractPlaceToPayClient implements PlaceToPayClient
     protected function makePostRequest($apiTransaction, $body)
     {
         try {
-            return $this->http_client->post(
+            $httpResponse = $this->http_client->post(
                 "{$this->api_url}/{$apiTransaction}",
                 $this->buildHeaders(),
                 $body
             );
+            return [
+                'body' => $httpResponse->getBody(),
+                'errorMessage' => null,
+                'errorCode' => null
+            ];
         } catch (PlaceToPayException $e) {
-            return new PlaceToPayClient(null, $e->getErrorCode(), $e->getMessage()); //Return a new interface??
+            return [
+                'body' => null,
+                'errorMessage' => $e->getMessage(),
+                'errorCode' => $e->getErrorCode(),
+            ];
         } catch (Exception $e) {
-            return new PlaceToPayClient(null, null, $e->getMessage()); //Return a new interface??
+            return [
+                'body' => null,
+                'errorMessage' => $e->getMessage(),
+                'errorCode' => null,
+            ];
         }
     }
 
@@ -183,7 +211,7 @@ abstract class AbstractPlaceToPayClient implements PlaceToPayClient
      */
     protected function buildHeaders(): array
     {
-        if (! isset($this->authToken)) {
+        if (!isset($this->authToken)) {
             throw new PlaceToPayException(401, 'Missing access token');
         }
 

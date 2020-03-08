@@ -12,7 +12,7 @@ class PlaceToPayResponse
     private $message;
     private $errorMessage;
     private $errorCode;
-    private $isSuccess;
+    private $isSuccess = true;
 
     /**
      * PlaceToPayResponse constructor.
@@ -27,7 +27,7 @@ class PlaceToPayResponse
         $this->errorMessage = $errorMessage;
         $this->errorCode = $errorCode;
 
-        if ($this->errorCode != null || $this->errorMessage != null) {
+        if (isset($this->errorCode) || isset($this->errorMessage)) {
             $this->isSuccess = false;
         }
     }
