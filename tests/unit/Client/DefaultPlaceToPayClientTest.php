@@ -5,7 +5,6 @@ declare(strict_types=1);
 use Mockery as mocker;
 use PHPUnit\Framework\TestCase;
 use PlacetoPay\Client\DefaultPlaceToPayClient;
-use PlacetoPay\Exception\NotValidTokenException;
 use PlacetoPay\HTTPClient\Model\HTTPResponse;
 use PlacetoPay\Models\DebitPointsResponse;
 use PlacetoPay\Models\LockPointsResponse;
@@ -24,8 +23,6 @@ final class DefaultPlaceToPayClientTest extends TestCase
             $defaultPlaceToPayClient
         );
     }
-
-
 
     /** @test */
     public function shouldLockAndDebitPoints(): void

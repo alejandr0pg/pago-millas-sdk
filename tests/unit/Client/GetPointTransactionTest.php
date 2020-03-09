@@ -11,7 +11,6 @@ use PlacetoPay\HTTPClient\Model\HTTPResponse;
 
 final class GetPointTransactionTest extends TestCase
 {
-
     /** @test */
     public function shouldReturnAPlaceToPayResponseWithDataWhenAskingForPoints(): void
     {
@@ -75,7 +74,6 @@ final class GetPointTransactionTest extends TestCase
         $this->assertEqualsIgnoringCase($response->isSuccessful(), false);
     }
 
-
     /** @test */
     public function shouldReturnAPlaceToPayResponseWithIsSuccessFalseAndExpiredTokenError(): void
     {
@@ -105,7 +103,6 @@ final class GetPointTransactionTest extends TestCase
         $this->assertEqualsIgnoringCase($response->getErrorCode(), 'EXPIRED_TOKEN');
         $this->assertEqualsIgnoringCase($response->isSuccessful(), false);
     }
-
 
     /** @test */
     public function shouldReturnAPlaceToPayResponseWithIsSuccessFalseAndUnauthorizedError(): void
@@ -137,7 +134,6 @@ final class GetPointTransactionTest extends TestCase
         $this->assertEqualsIgnoringCase($response->isSuccessful(), false);
     }
 
-
     /** @test */
     public function shouldReturnAPlaceToPayResponseWithIsSuccessFalseWhenAnyExceptionThrowed(): void
     {
@@ -168,7 +164,6 @@ final class GetPointTransactionTest extends TestCase
         $this->assertEqualsIgnoringCase($response->isSuccessful(), false);
     }
 
-
     /**
      * @param $object
      * @param $propertyName
@@ -183,9 +178,6 @@ final class GetPointTransactionTest extends TestCase
         $property->setValue($object, $value);
         $property->setAccessible(false);
     }
-
-
-
 
     private function buildClient()
     {
