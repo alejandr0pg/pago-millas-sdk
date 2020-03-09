@@ -11,7 +11,6 @@ class HTTPResponse
     private $headers;
     private $body;
 
-
     /**
      * HTTPResponse constructor.
      *
@@ -19,7 +18,7 @@ class HTTPResponse
      * @param $statusCode
      * @param $body
      */
-    public function __construct($headers, $statusCode,  $body)
+    public function __construct($headers, $statusCode, $body)
     {
         $this->headers = $headers;
         $this->status_code = $statusCode;

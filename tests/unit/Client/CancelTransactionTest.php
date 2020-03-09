@@ -12,9 +12,6 @@ use PlacetoPay\Models\CancelTransactionResponse;
 
 final class CancelTransactionTest extends TestCase
 {
-
-
-
     /** @test */
     public function shouldReturnAPlaceToPayResponseWithDataContainingDocumentIdAndMilesWhenCancelingTransaction(): void
     {
@@ -47,7 +44,6 @@ final class CancelTransactionTest extends TestCase
         );
     }
 
-
     /** @test */
     public function shouldReturnAPlaceToPayResponseWithIsSuccessFalseAndNotValidTokenErrorWhenCancelingTransaction(): void
     {
@@ -68,7 +64,7 @@ final class CancelTransactionTest extends TestCase
         $this->mockProperty($defaultPlaceToPayClient, 'expireAt', '7200');
         $this->mockProperty($defaultPlaceToPayClient, 'refreshToken', 'authToken');
 
-        $response =  $defaultPlaceToPayClient->cancelTransaction('document_id');
+        $response = $defaultPlaceToPayClient->cancelTransaction('document_id');
 
         $this->assertEqualsIgnoringCase($response->getErrorMessage(), 'El bearer token no es válido');
         $this->assertEqualsIgnoringCase($response->getErrorCode(), 'NOT_VALID_TOKEN');
@@ -78,7 +74,6 @@ final class CancelTransactionTest extends TestCase
             $response
         );
     }
-
 
     /** @test */
     public function shouldReturnAPlaceToPayResponseWithIsSuccessFalseAndExpiredTokenErrorWhenCancelingTransaction(): void
@@ -100,7 +95,7 @@ final class CancelTransactionTest extends TestCase
         $this->mockProperty($defaultPlaceToPayClient, 'expireAt', '7200');
         $this->mockProperty($defaultPlaceToPayClient, 'refreshToken', 'authToken');
 
-        $response =  $defaultPlaceToPayClient->cancelTransaction('document_id');
+        $response = $defaultPlaceToPayClient->cancelTransaction('document_id');
 
         $this->assertEqualsIgnoringCase($response->getErrorMessage(), 'El bearer token ha expirado y se necesita actualizarlo');
         $this->assertEqualsIgnoringCase($response->getErrorCode(), 'EXPIRED_TOKEN');
@@ -110,7 +105,6 @@ final class CancelTransactionTest extends TestCase
             $response
         );
     }
-
 
     /** @test */
     public function shouldReturnAPlaceToPayResponseWithIsSuccessFalseAndUnauthorizedErrorWhenCancelingTransaction(): void
@@ -132,7 +126,7 @@ final class CancelTransactionTest extends TestCase
         $this->mockProperty($defaultPlaceToPayClient, 'expireAt', '7200');
         $this->mockProperty($defaultPlaceToPayClient, 'refreshToken', 'authToken');
 
-        $response =  $defaultPlaceToPayClient->cancelTransaction('document_id');
+        $response = $defaultPlaceToPayClient->cancelTransaction('document_id');
 
         $this->assertEqualsIgnoringCase($response->getErrorMessage(), 'No autorizado');
         $this->assertEqualsIgnoringCase($response->getErrorCode(), 'UNAUTHORIZED');
@@ -142,7 +136,6 @@ final class CancelTransactionTest extends TestCase
             $response
         );
     }
-
 
     /**
      * @param $object
@@ -158,9 +151,6 @@ final class CancelTransactionTest extends TestCase
         $property->setValue($object, $value);
         $property->setAccessible(false);
     }
-
-
-
 
     private function buildClient()
     {
