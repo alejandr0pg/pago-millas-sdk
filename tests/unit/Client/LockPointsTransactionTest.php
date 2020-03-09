@@ -12,9 +12,6 @@ use PlacetoPay\Models\LockPointsResponse;
 
 final class LockPointTransactionTest extends TestCase
 {
-
-
-
     /** @test */
     public function shouldReturnAPlaceToPayResponseWithDataContainingDocumentIdAndMilesWhenLockingPoints(): void
     {
@@ -53,7 +50,6 @@ final class LockPointTransactionTest extends TestCase
         );
     }
 
-
     /** @test */
     public function shouldReturnAPlaceToPayResponseWithIsSuccessFalseAndNotValidTokenErrorWhenLockingPoints(): void
     {
@@ -74,7 +70,7 @@ final class LockPointTransactionTest extends TestCase
         $this->mockProperty($defaultPlaceToPayClient, 'expireAt', '7200');
         $this->mockProperty($defaultPlaceToPayClient, 'refreshToken', 'authToken');
 
-        $response =  $defaultPlaceToPayClient->lockPoints(10);
+        $response = $defaultPlaceToPayClient->lockPoints(10);
 
         $this->assertEqualsIgnoringCase($response->getMiles(), null);
         $this->assertEqualsIgnoringCase($response->getDocumentId(), null);
@@ -87,7 +83,6 @@ final class LockPointTransactionTest extends TestCase
             $response
         );
     }
-
 
     /** @test */
     public function shouldReturnAPlaceToPayResponseWithIsSuccessFalseAndExpiredTokenErrorWhenLockingPoints(): void
@@ -109,7 +104,7 @@ final class LockPointTransactionTest extends TestCase
         $this->mockProperty($defaultPlaceToPayClient, 'expireAt', '7200');
         $this->mockProperty($defaultPlaceToPayClient, 'refreshToken', 'authToken');
 
-        $response =  $defaultPlaceToPayClient->lockPoints(10);
+        $response = $defaultPlaceToPayClient->lockPoints(10);
 
         $this->assertEqualsIgnoringCase($response->getMiles(), null);
         $this->assertEqualsIgnoringCase($response->getDocumentId(), null);
@@ -122,7 +117,6 @@ final class LockPointTransactionTest extends TestCase
             $response
         );
     }
-
 
     /** @test */
     public function shouldReturnAPlaceToPayResponseWithIsSuccessFalseAndUnauthorizedErrorWhenLockingPoints(): void
@@ -144,7 +138,7 @@ final class LockPointTransactionTest extends TestCase
         $this->mockProperty($defaultPlaceToPayClient, 'expireAt', '7200');
         $this->mockProperty($defaultPlaceToPayClient, 'refreshToken', 'authToken');
 
-        $response =  $defaultPlaceToPayClient->lockPoints(10);
+        $response = $defaultPlaceToPayClient->lockPoints(10);
 
         $this->assertEqualsIgnoringCase($response->getMiles(), null);
         $this->assertEqualsIgnoringCase($response->getDocumentId(), null);
@@ -157,7 +151,6 @@ final class LockPointTransactionTest extends TestCase
             $response
         );
     }
-
 
     /**
      * @param $object
@@ -173,9 +166,6 @@ final class LockPointTransactionTest extends TestCase
         $property->setValue($object, $value);
         $property->setAccessible(false);
     }
-
-
-
 
     private function buildClient()
     {

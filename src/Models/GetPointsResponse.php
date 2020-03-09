@@ -21,7 +21,6 @@ class GetPointsResponse extends PlaceToPayResponse
      */
     public function __construct($payload, $errorMessage = null, $errorCode = null)
     {
-
         if ($payload != null) {
             $parsedData = json_decode($payload, true);
             if (isset($parsedData['Data']['miles']) && isset($parsedData['Data']['index_conversion'])) {

@@ -12,9 +12,6 @@ use PlacetoPay\Models\DebitPointsResponse;
 
 final class DebitPointTransactionTest extends TestCase
 {
-
-
-
     /** @test */
     public function shouldReturnAPlaceToPayResponseWithDataContainingDocumentIdAndMilesWhenDebitPoints(): void
     {
@@ -46,7 +43,6 @@ final class DebitPointTransactionTest extends TestCase
             $response
         );
     }
-
 
     /** @test */
     public function shouldReturnAPlaceToPayResponseWithIsSuccessFalseAndNotValidTokenErrorWhenDebitPoints(): void
@@ -80,7 +76,6 @@ final class DebitPointTransactionTest extends TestCase
         );
     }
 
-
     /** @test */
     public function shouldReturnAPlaceToPayResponseWithIsSuccessFalseAndExpiredTokenErrorWhenDebitPoints(): void
     {
@@ -112,7 +107,6 @@ final class DebitPointTransactionTest extends TestCase
             $response
         );
     }
-
 
     /** @test */
     public function shouldReturnAPlaceToPayResponseWithIsSuccessFalseAndUnauthorizedErrorWhenDebitPoints(): void
@@ -146,7 +140,6 @@ final class DebitPointTransactionTest extends TestCase
         );
     }
 
-
     /**
      * @param $object
      * @param $propertyName
@@ -161,9 +154,6 @@ final class DebitPointTransactionTest extends TestCase
         $property->setValue($object, $value);
         $property->setAccessible(false);
     }
-
-
-
 
     private function buildClient()
     {
