@@ -1,7 +1,5 @@
 # Placetopay Pago con millas SDK
 SDK para la integración de pagos con millas ( PPM ) a Placetopay.
-Con este código, podrá conectarse rápidamente con el servicio de redireccionamiento PlacetoPay.
-
 
 ## Requerimientos
 
