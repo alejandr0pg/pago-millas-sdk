@@ -9,6 +9,7 @@ use PlacetoPay\Exception\NotValidTokenException;
 use PlacetoPay\Exception\UnauthorizedException;
 use PlacetoPay\HTTPClient\Model\HTTPResponse;
 use PlacetoPay\Models\ReversePointsResponse;
+use PlacetoPay\PlaceToPayClientBuilder;
 
 final class RevertPointsTest extends TestCase
 {
@@ -143,7 +144,114 @@ final class RevertPointsTest extends TestCase
         );
     }
 
+    /** @test */
+    public function shouldCallTheMethodStoreInCacheWhenTokenIsExpiredAndItRenewTheToken(): void
+    {
+        $defaultPlaceToPayClient = $this->buildClient();
+        $httpClient = mocker::mock('PlacetoPay\HTTPClient\GuzzleHttpClient');
+        $defaultPlaceToPayClient->shouldReceive('tokenExpired')
+            ->andReturn(true);
 
+        $httpClient->shouldReceive('post')
+            ->andThrow(
+                new UnauthorizedException('UNAUTHORIZED', 'No autorizado')
+            );
+
+        $httpClient->shouldReceive('get')
+            ->andReturn(
+                new HTTPResponse(
+                    ['Content-Type' => 'application/json'],
+                    200,
+                    json_encode([
+                        'access_token' => '4NRMBBHZNJKOFZZ_XJ45AG',
+                        'expires_in' => 7200,
+                        'refresh_token' => 'WEJZQZHBWGEMR9EQNTP5WA',
+                        'scope' => 'write',
+                        'token_type' => 'Bearer'
+
+                    ])
+                )
+            );
+        $cacheImpl = mocker::mock('psr\cache\CacheItemPoolInterface');
+
+        $defaultPlaceToPayClient->shouldReceive('storeValueInCache')
+            ->with('access_token', '4NRMBBHZNJKOFZZ_XJ45AG', 7200)->once();
+
+        $defaultPlaceToPayClient->shouldReceive('storeValueInCache')
+            ->with('refresh_token', 'WEJZQZHBWGEMR9EQNTP5WA')->once();
+
+        $defaultPlaceToPayClient->shouldReceive('storeValueInCache')
+            ->with('expire_at', 7200)->once();
+
+        $defaultPlaceToPayClient->shouldReceive('storeValueInCache')
+            ->with('client_id', 'client_id')->once();
+
+        $defaultPlaceToPayClient->shouldReceive('storeValueInCache')
+            ->with('client_secret', 'client_secret')->once();
+
+
+        $this->mockProperty($defaultPlaceToPayClient, 'cache', $cacheImpl);
+        $this->mockProperty($defaultPlaceToPayClient, 'api_url', 'localhost:8080');
+        $this->mockProperty($defaultPlaceToPayClient, 'authToken', 'authToken');
+        $this->mockProperty($defaultPlaceToPayClient, 'http_client', $httpClient);
+        $this->mockProperty($defaultPlaceToPayClient, 'expireAt', '7200');
+        $this->mockProperty($defaultPlaceToPayClient, 'refreshToken', 'authToken');
+
+        $response =  $defaultPlaceToPayClient->reversePoint('document_id');
+
+        $this->assertEqualsIgnoringCase($response->getErrorMessage(), 'No autorizado');
+        $this->assertEqualsIgnoringCase($response->getErrorCode(), 'UNAUTHORIZED');
+        $this->assertEqualsIgnoringCase($response->isSuccessful(), false);
+        $this->assertInstanceOf(
+            ReversePointsResponse::class,
+            $response
+        );
+    }
+
+
+
+    /** @test */
+    public function shouldCallTheMethodLoadSessionData(): void
+    {
+
+        $cacheImpl = mocker::mock('psr\cache\CacheItemPoolInterface');
+        $cacheItem = mocker::mock('psr\cache\CacheItem');
+        $cacheItem->shouldReceive('set')->times(5);
+        $cacheItem->shouldReceive('expiresAfter')->once();
+        $cacheImpl->shouldReceive('getItem')->with('access_token')->andReturn($cacheItem)->once();
+        $cacheImpl->shouldReceive('getItem')->with('refresh_token')->andReturn($cacheItem)->once();
+        $cacheImpl->shouldReceive('getItem')->with('expire_at')->andReturn($cacheItem)->once();
+        $cacheImpl->shouldReceive('getItem')->with('client_id')->andReturn($cacheItem)->once();
+        $cacheImpl->shouldReceive('getItem')->with('client_secret')->andReturn($cacheItem)->once();
+        $cacheImpl->shouldReceive('hasItem')->with('access_token')->andReturn(false)->once();
+
+
+        $httpClient = mocker::mock('PlacetoPay\HTTPClient\GuzzleHttpClient');
+        $httpClient->shouldReceive('get')
+            ->andReturn(
+                new HTTPResponse(
+                    ['Content-Type' => 'application/json'],
+                    200,
+                    json_encode([
+                        'access_token' => '4NRMBBHZNJKOFZZ_XJ45AG',
+                        'expires_in' => 7200,
+                        'refresh_token' => 'WEJZQZHBWGEMR9EQNTP5WA',
+                        'scope' => 'write',
+                        'token_type' => 'Bearer'
+
+                    ])
+                )
+            );
+        $defaultPlaceToPayClient =  PlaceToPayClientBuilder::builder()
+            ->withApiUrl('apiURL')
+            ->withClientId('client_id')
+            ->withClientSecret('client_secret')
+            ->withRedirectUrl('redirectUrl')
+            ->withCustomHTTPClient($httpClient)
+            ->withCache($cacheImpl)
+            ->build();
+        $this->mockProperty($defaultPlaceToPayClient, 'http_client', $httpClient);
+    }
     /**
      * @param $object
      * @param $propertyName
@@ -173,5 +281,11 @@ final class RevertPointsTest extends TestCase
         $this->mockProperty($mock, 'api_url', 'apiUrl');
 
         return $mock;
+    }
+
+    public function tearDown(): void
+    {
+        parent::tearDown();
+        mocker::close();
     }
 }

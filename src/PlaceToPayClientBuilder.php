@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace PlacetoPay\Client;
+namespace PlacetoPay;
 
+use PlacetoPay\Client\DefaultPlaceToPayClient;
 use PlacetoPay\Client\Interfaces\PlaceToPayClient;
 use PlacetoPay\Exception\PlaceToPayException;
 use PlacetoPay\HTTPClient\Enums\HTTPClientType;
@@ -38,6 +39,12 @@ class ClientBuilder
      */
     public function __construct()
     {
+    }
+
+    public function withCustomHTTPClient($customClient): self
+    {
+        $this->http_client = $customClient;
+        return $this;
     }
 
     /**
@@ -121,19 +128,19 @@ class ClientBuilder
      */
     public function build(): PlaceToPayClient
     {
-        if (! isset($this->http_client)) {
+        if (!isset($this->http_client)) {
             $this->http_client = new GuzzleHttpClient();
         }
 
-        if (! isset($this->redirect_url)) {
+        if (!isset($this->redirect_url)) {
             throw new PlaceToPayException('you must provide a redirect url');
         }
 
-        if (! isset($this->api_url)) {
+        if (!isset($this->api_url)) {
             throw new PlaceToPayException('you must provide a api url');
         }
 
-        if (! isset($this->cache)) {
+        if (!isset($this->cache)) {
             throw new PlaceToPayException('you must provide a psr6 cache implementation');
         }
 
