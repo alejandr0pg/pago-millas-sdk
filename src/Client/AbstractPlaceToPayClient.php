@@ -249,7 +249,7 @@ abstract class AbstractPlaceToPayClient implements PlaceToPayClient
     {
         $this->authToken = $result['access_token'];
         $this->refreshToken = $result['refresh_token'];
-        $this->expireAt = $result['expire_at'];
+        $this->expireAt = $result['expires_in'];
 
         $this->storeValueInCache('access_token', $this->authToken, $this->expireAt);
         $this->storeValueInCache('refresh_token', $this->refreshToken);
@@ -277,7 +277,7 @@ abstract class AbstractPlaceToPayClient implements PlaceToPayClient
      * @param $value
      * @param null $expireAt
      */
-    private function storeValueInCache($key, $value, $expireAt = null)
+    protected function storeValueInCache($key, $value, $expireAt = null)
     {
         $item = $this->cache->getItem($key);
         $item->set($value);
@@ -292,10 +292,10 @@ abstract class AbstractPlaceToPayClient implements PlaceToPayClient
      */
     private function loadSessionData()
     {
-        $this->authToken = $this->cache->getItem('access_token');
-        $this->refreshToken = $this->cache->getItem('refresh_token');
-        $this->expireAt = $this->cache->getItem('expire_at');
-        $this->client_id = $this->cache->getItem('client_id');
-        $this->client_secret = $this->cache->getItem('client_secret');
+        $this->authToken = $this->cache->getItem('access_token')->get();
+        $this->refreshToken = $this->cache->getItem('refresh_token')->get();
+        $this->expireAt = $this->cache->getItem('expire_at')->get();
+        $this->client_id = $this->cache->getItem('client_id')->get();
+        $this->client_secret = $this->cache->getItem('client_secret')->get();
     }
 }
