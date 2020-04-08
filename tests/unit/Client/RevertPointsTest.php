@@ -244,7 +244,6 @@ final class RevertPointsTest extends TestCase
             ->withCustomHTTPClient($httpClient)
             ->withCache($cacheImpl)
             ->build();
-        $this->mockProperty($defaultPlaceToPayClient, 'http_client', $httpClient);
     }
     /**
      * @param $object

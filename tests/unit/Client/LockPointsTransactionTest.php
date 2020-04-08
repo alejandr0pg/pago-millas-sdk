@@ -10,7 +10,7 @@ use PlacetoPay\Exception\UnauthorizedException;
 use PlacetoPay\HTTPClient\Model\HTTPResponse;
 use PlacetoPay\Models\LockPointsResponse;
 
-final class LockPointTransactionTest extends TestCase
+final class LockPointsTransactionTest extends TestCase
 {
     /** @test */
     public function shouldReturnAPlaceToPayResponseWithDataContainingDocumentIdAndMilesWhenLockingPoints(): void

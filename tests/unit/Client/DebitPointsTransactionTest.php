@@ -10,7 +10,7 @@ use PlacetoPay\Exception\UnauthorizedException;
 use PlacetoPay\HTTPClient\Model\HTTPResponse;
 use PlacetoPay\Models\DebitPointsResponse;
 
-final class DebitPointTransactionTest extends TestCase
+final class DebitPointsTransactionTest extends TestCase
 {
     /** @test */
     public function shouldReturnAPlaceToPayResponseWithDataContainingDocumentIdAndMilesWhenDebitPoints(): void
